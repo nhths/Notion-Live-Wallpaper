@@ -15,6 +15,44 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NotionLiveWallpaper"
-        tools:targetApi="33" />
+        tools:targetApi="33">
+
+        <service
+            android:name=".wallpaper.NotionWallpaper"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/wallpaper_thumbnail"/>
+        </service>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="true"
+            android:enabled="true"
+            android:label="@string/activity_settings_label"
+            android:theme="@style/Theme.NotionLiveWallpaper">
+            <intent-filter>
+                <category android:name="android.intent.category.PREFERENCE"/>
+            </intent-filter>
+        </activity>
+
+        <activity-alias
+            android:name="LauncherSettingsActivity"
+            android:targetActivity=".SettingsActivity"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity-alias>
+
+    </application>
 
 </manifest>
