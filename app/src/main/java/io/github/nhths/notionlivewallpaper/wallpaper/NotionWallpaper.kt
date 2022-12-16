@@ -20,6 +20,8 @@ class NotionWallpaper : WallpaperService() {
     }
 
     inner class NotionWallpaperEngine : WallpaperService.Engine() {
+        var lastRender = System.currentTimeMillis();
+
         val thread = HandlerThread("MyHandlerThread").apply {
             start()
         }
@@ -65,7 +67,12 @@ class NotionWallpaper : WallpaperService() {
                 view.draw(canvas)
                 surfaceHolder.unlockCanvasAndPost(canvas)
             }
-            handler.postDelayed({redraw()}, 8)
+            if (System.currentTimeMillis() - 8 > lastRender) {
+                handler.post { redraw() };
+            } else {
+                handler.postDelayed({redraw()}, System.currentTimeMillis() - lastRender)
+            }
+            lastRender = System.currentTimeMillis()
         }
 
     }
