@@ -1,13 +1,16 @@
 package io.github.nhths.notionlivewallpaper
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import io.github.nhths.notionlivewallpaper.databinding.ActivitySettingsBinding
+import io.github.nhths.notionlivewallpaper.ui.model.SettingsActivityViewModel
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
+    val viewModel by viewModels<SettingsActivityViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
