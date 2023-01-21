@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notion Wallpaper</title>
+
+</head>
+<body>
+    <p>Redirecting to app. It will only take few seconds...</p>
+    <button onclick="clickButton()" disabled id="btn">Return to app</button>
+</body>
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        margin: 10px;
+        background-size: cover;
+        width: 100%;
+        background-color: #191919;
+        color: #b4b4b4;
+        /* background: linear-gradient(221.52deg, #FFFFFF 0%, #CBCBCB 44.99%, #FFFFFF 86.39%) no-repeat */
+    }
+    p, button {
+        height: auto;
+        text-align: center;
+        margin: auto;
+        font-family: sans-serif;
+        font-size: 24px;
+        display: block;
+    }
+    p {
+        margin-top: 100px;
+    }
+    button {
+        margin-top: 20px;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 30px;
+        background-color: rgb(219, 219, 219);
+        color: rgb(139, 139, 139);
+    }
+    .active {
+        cursor: pointer;
+        background-color: rgb(54, 189, 212);
+        color: rgb(16, 50, 54);
+    }
+</style>
+<script>
+    const toogleButton = () => {
+        let button = document.querySelector('button')
+        button.disabled = false
+        button.classList.add("active")
+    }
+
+    const clickButton = () => {
+        location.replace("notionlivewallpaper://auth/code?code=" + codeKey);
+    }
+
+    
+    console.log(location.search);
+    const urlParams = new URLSearchParams(location.search);
+    console.log(urlParams);
+    const codeKey = urlParams.get("code");
+    console.log(codeKey);
+    location.replace("notionlivewallpaper://auth/code?code=" + codeKey);
+    
+    setTimeout(toogleButton, 5000);
+    // toogleButton()
+</script>
+
+</html>
