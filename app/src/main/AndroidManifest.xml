@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <uses-feature
         android:name="android.software.live_wallpaper"
         android:required="true" />
@@ -34,18 +36,26 @@
         <activity
             android:name=".SettingsActivity"
             android:exported="true"
-            android:enabled="true"
             android:label="@string/activity_settings_label"
             android:theme="@style/Theme.NotionLiveWallpaper">
             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
                 <category android:name="android.intent.category.PREFERENCE"/>
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="notionlivewallpaper" android:host="auth"/>
             </intent-filter>
         </activity>
 
         <activity-alias
             android:name="LauncherSettingsActivity"
             android:targetActivity=".SettingsActivity"
-            android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
