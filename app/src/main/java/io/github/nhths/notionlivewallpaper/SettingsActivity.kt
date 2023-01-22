@@ -10,7 +10,7 @@ import io.github.nhths.notionlivewallpaper.ui.model.SettingsActivityViewModel
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
-    val viewModel by viewModels<SettingsActivityViewModel>()
+    val viewModel by viewModels<SettingsActivityViewModel>(factoryProducer = {SettingsActivityViewModel.Factory(application)})
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -20,5 +20,7 @@ class SettingsActivity : AppCompatActivity() {
 
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
+
+        viewModel.parseIntent(intent)
     }
 }
