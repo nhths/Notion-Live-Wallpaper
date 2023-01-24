@@ -1,4 +1,4 @@
-package io.github.nhths.notionlivewallpaper.data.notion
+package io.github.nhths.notionlivewallpaper.data
 
 import android.util.Base64
 import okhttp3.MediaType.Companion.toMediaType

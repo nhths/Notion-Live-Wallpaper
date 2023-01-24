@@ -1,9 +1,9 @@
-package io.github.nhths.notionlivewallpaper.data.notion.auth
+package io.github.nhths.notionlivewallpaper.data.auth
 
 import android.net.Uri
 import android.util.Log
 import io.github.nhths.notionlivewallpaper.Config
-import io.github.nhths.notionlivewallpaper.data.notion.NetwokUtils
+import io.github.nhths.notionlivewallpaper.data.NetwokUtils
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody

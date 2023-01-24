@@ -7,10 +7,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.github.nhths.notionlivewallpaper.App
-import io.github.nhths.notionlivewallpaper.data.notion.auth.Auth
+import io.github.nhths.notionlivewallpaper.data.auth.Auth
 
 class SettingsActivityViewModel(application: Application) : AndroidViewModel(application) {
 
+    @Suppress("UNCHECKED_CAST")
     class Factory(private val application: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return SettingsActivityViewModel(application) as T
