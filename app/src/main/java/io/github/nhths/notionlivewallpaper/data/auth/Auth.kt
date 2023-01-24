@@ -7,6 +7,7 @@ import com.squareup.moshi.Moshi
 import io.github.nhths.notionlivewallpaper.Config
 import io.github.nhths.notionlivewallpaper.data.NetwokUtils
 import io.github.nhths.notionlivewallpaper.data.model.AuthTokenRequestModel
+import io.github.nhths.notionlivewallpaper.data.model.AuthTokenResponseModel
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -25,9 +26,9 @@ class Auth() {
         val authBody = AuthTokenRequestModel(Config.OAuthRedirectUrl, code)
 
         val moshi: Moshi = Moshi.Builder().build()
-        val jsonAdapter: JsonAdapter<AuthTokenRequestModel> = moshi.adapter(AuthTokenRequestModel::class.java)
+        val requestJsonAdapter: JsonAdapter<AuthTokenRequestModel> = moshi.adapter(AuthTokenRequestModel::class.java)
 
-        val rbody : RequestBody = jsonAdapter.toJson(authBody).toRequestBody(NetwokUtils.MediaTypes.JSON.mediaType())
+        val rbody : RequestBody = requestJsonAdapter.toJson(authBody).toRequestBody(NetwokUtils.MediaTypes.JSON.mediaType())
 
         val request = Request.Builder()
             .url(Config.OAuthTokenUrl.toHttpUrl())
@@ -36,13 +37,17 @@ class Auth() {
             .post(rbody)
             .build()
 
+        val responseJsonAdapter: JsonAdapter<AuthTokenResponseModel> = moshi.adapter(AuthTokenResponseModel::class.java)
+
         client.newCall(request).enqueue(object : Callback{
             override fun onFailure(call: Call, e: IOException) {
                 Log.e("Token", "Error $e, $call")
             }
 
             override fun onResponse(call: Call, response: Response) {
-                Log.i("Token", "Success!!! $response; ${response.body?.string()}")
+                Log.i("Token", "Success!!! $response; ${response.body?.string()
+                    ?.let { responseJsonAdapter.fromJson(it)?.accessToken }}")
+
             }
 
         })
