@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+apply from: 'keys.gradle'
+
 android {
     namespace 'io.github.nhths.notionlivewallpaper'
     compileSdk 33
@@ -18,7 +20,16 @@ android {
     }
 
     buildTypes {
+        debug {
+            for (field in keysDebug) {
+                buildConfigField field.type, field.name, field.value
+            }
+        }
         release {
+            for (field in keysRelease) {
+                buildConfigField field.type, field.name, field.value
+            }
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
