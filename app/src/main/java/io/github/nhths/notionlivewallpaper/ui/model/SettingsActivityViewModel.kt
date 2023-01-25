@@ -1,13 +1,16 @@
 package io.github.nhths.notionlivewallpaper.ui.model
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.github.nhths.notionlivewallpaper.App
-import io.github.nhths.notionlivewallpaper.data.auth.Auth
+import io.github.nhths.notionlivewallpaper.data.StorageUtils
+import io.github.nhths.notionlivewallpaper.data.auth.*
 
 class SettingsActivityViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -18,26 +21,60 @@ class SettingsActivityViewModel(application: Application) : AndroidViewModel(app
         }
     }
 
-    fun parseIntent(intent: Intent){
-        val auth = Auth()
+    private fun startAuth(){
+        Auth.Instance.authWithPublicIntegration(
+            NotionOAuth.getAuthCodeUri().toString(),
+            object : Auth.TokenStateListener{
+            override fun onCodeNeedRequest(requestUri: Uri) {
+                val browserIntent = Intent(Intent.ACTION_VIEW, requestUri)
+                browserIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                getApplication<App>().applicationContext.startActivity(browserIntent)
+            }
 
-        val appLinkIntent = intent
-        val appLinkAction = appLinkIntent.action
-        val appLinkData = appLinkIntent.data
+            override fun onTokenNeedRequest(code: String) {
+                val request = NotionOAuth.getTokenAuthRequest(AuthData(), code)
+                NotionOAuth.sendPostTokenRequest(request,
+                    {e -> Log.e("TokenResponseErr", e.toString())}
+                ) { responseBody, responseCode, msg ->
+                    Log.i("TokenResponse", "$responseCode, $msg, ${responseBody.accessToken}")
+                    Auth.Instance.receivedToken(responseBody.accessToken)
+                }
+            }
 
-        Log.i("Intents", appLinkData.toString() + "  " + appLinkIntent.toString() + "  " + appLinkAction.toString())
+        })
+    }
+    fun parseIntent(intent: Intent) {
+        if (Auth.Instance.state.value == Auth.State.INIT) {
+            Auth.Instance.findToken(
+                object : Auth.KeyStoreOwner {
+                    val keyStore = KeyStoreSharedPreferences(
+                        getApplication<App>().getSharedPreferences(StorageUtils.PREF_STORAGE_KEY, Context.MODE_PRIVATE)
+                    )
+                    override fun getKeyStore(): KeyStore = keyStore
+                },
+                object : Auth.AuthStateListener {
+                    override fun onAuthNeed() {
+                        Log.i("Auth", "Need auth")
+                        startAuth()
+                    }
 
-        val code: String? = appLinkData?.getQueryParameter("code")
+                    override fun onTokenExpired() {
+                        Log.i("Auth", "Token Expired")
+                    }
 
-        Log.i("Login", code.orEmpty())
+                    override fun onFindToken(token: String) {
+                        Log.i("Auth", "Found token")
+                    }
+                }
+            )
+        }
 
-        if (code == null) {
-            val browserIntent = Intent(Intent.ACTION_VIEW, auth.getAuthCodeUri())
-            browserIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            getApplication<App>().applicationContext.startActivity(browserIntent)
-
-        } else {
-            auth.getToken(code)
+        if (intent.action != Intent.ACTION_VIEW || !intent.categories.contains(Intent.CATEGORY_BROWSABLE)) {
+            return
+        }
+        val appLinkData = intent.data
+        if (Auth.Instance.state.value == Auth.State.WAIT_CODE) {
+            appLinkData?.getQueryParameter("code")?.let {Auth.Instance.receivedCode(it)}
         }
     }
 
