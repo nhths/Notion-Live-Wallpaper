@@ -23,18 +23,18 @@ class NotionOAuth {
                 .appendQueryParameter("owner", "user")
                 .build()
 
-        fun getTokenAuthRequest(authDataProvider: AuthDataProvider, code: String) : Request {
+        fun getTokenAuthRequest(authData: AuthData, code: String) : Request {
             val moshi: Moshi = Moshi.Builder().build()
             val requestJsonAdapter: JsonAdapter<AuthTokenRequestModel> = moshi.adapter(
                 AuthTokenRequestModel::class.java)
 
 
-            val authBody = AuthTokenRequestModel(authDataProvider.OAuthRedirectUrl, code)
+            val authBody = AuthTokenRequestModel(authData.OAuthRedirectUrl, code)
             val requestBody : RequestBody = requestJsonAdapter.toJson(authBody).toRequestBody(NetwokUtils.MediaTypes.JSON.mediaType())
 
             return Request.Builder()
                 .url(Config.OAuthTokenUrl.toHttpUrl())
-                .addHeader("Authorization", NetwokUtils.makeBasicAuthCredentials(authDataProvider.OAuthClientID, authDataProvider.OAuthClientSecret))
+                .addHeader("Authorization", NetwokUtils.makeBasicAuthCredentials(authData.OAuthClientID, authData.OAuthClientSecret))
                 .addHeader("Content-Type", NetwokUtils.MediaTypes.JSON.getTypeString())
                 .post(requestBody)
                 .build()
